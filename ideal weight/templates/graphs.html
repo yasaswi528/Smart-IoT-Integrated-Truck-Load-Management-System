@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThingSpeak Graphs</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --secondary: #858796;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0.5rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.35rem;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        
+        .btn-refresh {
+            position: absolute;
+            right: 1.5rem;
+            top: 1rem;
+            z-index: 1;
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+        }
+        
+        .value-box {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.35rem;
+            background-color: #f8f9fc;
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+        .navbar {
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #4e73df;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    color: #5a5c69;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: #4e73df;
+}
+
+.nav-item.active .nav-link {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}
+        
+        .value-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .value-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .field1 { color: var(--primary); }
+        .field2 { color: var(--success); }
+        .field3 { color: var(--info); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">User Portal</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('calculate') }}">Calculate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}">History</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('graphs') }}">Graphs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-header">
+                Live Data from ThingSpeak
+                <button id="refreshBtn" class="btn btn-primary btn-sm btn-refresh">Refresh</button>
+            </div>
+            <div class="card-body">
+                <div class="value-display">
+                    <div class="value-box">
+                        <div class="value-number field1" id="field1-value">--</div>
+                        <div class="value-label">Field 1</div>
+                    </div>
+                    <div class="value-box">
+                        <div class="value-number field2" id="field2-value">--</div>
+                        <div class="value-label">Field 2</div>
+                    </div>
+                    <div class="value-box">
+                        <div class="value-number field3" id="field3-value">--</div>
+                        <div class="value-label">Field 3</div>
+                    </div>
+                </div>
+                
+                <div id="chartLoading" class="loading-message">Loading chart data...</div>
+                <div class="chart-container">
+                    <canvas id="thingspeakChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Initialize chart with empty data
+        const ctx = document.getElementById('thingspeakChart').getContext('2d');
+        let thingspeakChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Latest Reading'],
+                datasets: [
+                    {
+                        label: 'Field 1',
+                        data: [],
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Field 2',
+                        data: [],
+                        borderColor: 'rgba(28, 200, 138, 1)',
+                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Field 3',
+                        data: [],
+                        borderColor: 'rgba(54, 185, 204, 1)',
+                        backgroundColor: 'rgba(54, 185, 204, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Function to fetch and update chart data
+        function updateChartData() {
+            document.getElementById('chartLoading').style.display = 'block';
+            
+            fetch("{{ url_for('thingspeak_api') }}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Hide loading message
+                    document.getElementById('chartLoading').style.display = 'none';
+                    
+                    // Update displayed values
+                    document.getElementById('field1-value').textContent = data.values[0];
+                    document.getElementById('field2-value').textContent = data.values[1];
+                    document.getElementById('field3-value').textContent = data.values[2];
+                    
+                    // Update chart data
+                    thingspeakChart.data.datasets[0].data = [data.values[0]];
+                    thingspeakChart.data.datasets[1].data = [data.values[1]];
+                    thingspeakChart.data.datasets[2].data = [data.values[2]];
+                    thingspeakChart.update();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('chartLoading').textContent = 'Error loading chart data. Please try again.';
+                });
+        }
+
+        // Initial data load
+        updateChartData();
+        
+        // Refresh button functionality
+        document.getElementById('refreshBtn').addEventListener('click', updateChartData);
+    </script>
+</body>
+</html>

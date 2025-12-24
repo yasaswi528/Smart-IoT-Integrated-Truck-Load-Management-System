@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --secondary: #858796;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0.5rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            border-left: 0.25rem solid var(--primary);
+        }
+        
+        .stat-card .card-body {
+            padding: 1rem 1.5rem;
+        }
+        
+        .stat-card .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        .stat-card .text-success {
+            color: var(--success) !important;
+        }
+        
+        .stat-card .text-info {
+            color: var(--info) !important;
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--secondary);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .user-card {
+            transition: all 0.3s;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-email {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .alert {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.35rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .admin-code {
+            background-color: #f8f9fc;
+            padding: 0.5rem 1rem;
+            border-radius: 0.35rem;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .navbar {
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #4e73df;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    color: #5a5c69;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: #4e73df;
+}
+
+.nav-item.active .nav-link {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Portal</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}">Calculations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-title">Total Workers</div>
+                        <div class="stat-value text-primary">{{ total_users }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-title">Today's Calculations</div>
+                        <div class="stat-value text-success">{{ calculations_today }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-title">Total Calculations</div>
+                        <div class="stat-value text-info">{{ total_calculations }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                Your Admin ID
+            </div>
+            <div class="card-body">
+                <div class="admin-code">{{ current_user.admin_code }}</div>
+                <small class="text-muted">Share this with your workers for registration</small>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                Your Workers
+            </div>
+            <div class="card-body">
+                {% if users %}
+                    <div class="row">
+                        {% for user in users %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card user-card">
+                                    <div class="card-body text-center">
+                                        <img src="{{ url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else url_for('static', filename='images/avatar-user.png') }}" 
+                                             class="user-avatar mb-3">
+                                        <h5 class="user-name">{{ user.username }}</h5>
+                                        <p class="user-email">{{ user.email }}</p>
+                                        <a href="{{ url_for('history') }}?user_id={{ user.id }}" class="btn">
+                                            View Calculations
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">No workers registered yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --secondary: #858796;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0.5rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--dark);
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #d1d3e2;
+            border-radius: 0.35rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+            color: var(--dark);
+            background-color: #fff;
+            border-color: #bac8f3;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.35rem;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primary);
+            border-color: var(--primary);
+            width: 100%;
+            padding: 0.75rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        
+        .result-card {
+            background-color: #f8f9fc;
+            border-left: 0.25rem solid var(--success);
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+        
+        .formula {
+            font-family: monospace;
+            background-color: #f8f9fc;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        .navbar {
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #4e73df;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    color: #5a5c69;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: #4e73df;
+}
+
+.nav-item.active .nav-link {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">User Portal</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('calculate') }}">Calculate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('graphs') }}">Graphs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                New Calculation
+            </div>
+            <div class="card-body">
+    <form method="POST" action="{{ url_for('calculate') }}" id="calculationForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="weight">Temperature (°C)</label>
+                    <input type="number" step="0.01" class="form-control" id="weight" name="weight" required
+                           value="{{ thingspeak_values[0] if thingspeak_values else '' }}" readonly>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="pressure">Pressure (mmHg)</label>
+                    <input type="number" step="0.01" class="form-control" id="pressure" name="pressure" required
+                           value="{{ thingspeak_values[1] if thingspeak_values else '' }}" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="ideal_weight">Hydralic_lift_pressure </label>
+                    <input type="number" step="0.01" class="form-control" id="ideal_weight" name="ideal_weight" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="temperature">Weight (Gms)</label>
+                    <input type="number" step="0.01" class="form-control" id="temperature" name="temperature" required
+                           value="{{ thingspeak_values[2] if thingspeak_values else '' }}" readonly>
+                </div>
+            </div>
+        </div>
+        
+       
+        
+        <button type="submit" class="btn btn-primary">Calculate</button>
+        <button type="button" class="btn btn-secondary" id="refreshValues">Refresh Values</button>
+    </form>
+</div>
+
+<script>
+    // Function to refresh values from ThingSpeak
+    document.getElementById('refreshValues').addEventListener('click', function() {
+        fetch("{{ url_for('thingspeak_api') }}")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('weight').value = data.values[0];
+                document.getElementById('pressure').value = data.values[1];
+                document.getElementById('temperature').value = data.values[2];
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Error refreshing values. Please try again.');
+            });
+    });
+</script>
+        
+        {% if calculation %}
+        <div class="card result-card">
+            <div class="card-body text-center">
+                <h5>Calculation Result</h5>
+                <div class="result-value">{{ calculation.result }}</div>
+                <p class="mb-0">Saved to your history</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,328 @@
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation History</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+            --secondary: #858796;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        .navbar {
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #4e73df;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    color: #5a5c69;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: #4e73df;
+}
+
+.nav-item.active .nav-link {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0.5rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            border-left: 0.25rem solid var(--primary);
+        }
+        
+        .stat-card .card-body {
+            padding: 1rem 1.5rem;
+        }
+        
+        .stat-card .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        .stat-card .text-success {
+            color: var(--success) !important;
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--secondary);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #e3e6f0;
+        }
+        
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #e3e6f0;
+            background-color: #f8f9fc;
+        }
+        
+        .table tbody + tbody {
+            border-top: 2px solid #e3e6f0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.4em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.35rem;
+        }
+        
+        .badge-primary {
+            color: #fff;
+            background-color: var(--primary);
+        }
+        
+        .badge-success {
+            color: #fff;
+            background-color: var(--success);
+        }
+        
+        .text-muted {
+            color: var(--secondary) !important;
+        }
+        
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .user-avatar-sm {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">{% if session.get('is_admin') %}Admin{% else %}User{% endif %} Portal</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if session.get('is_admin') %}{{ url_for('admin_dashboard') }}{% else %}{{ url_for('user_dashboard') }}{% endif %}">Dashboard</a>
+                    </li>
+                    {% if not session.get('is_admin') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('calculate') }}">Calculate</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('history') }}">History ({{ total_calculations }})</a>
+                    </li>
+                    {% if not session.get('is_admin') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('graphs') }}">Graphs</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-title">Today's Calculations</div>
+                        <div class="stat-value text-primary">{{ calculations_today }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-title">Total Calculations</div>
+                        <div class="stat-value text-success">{{ total_calculations }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                Calculation History
+            </div>
+            <div class="card-body">
+                {% if calculations %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    {% if session.get('is_admin') %}
+                                    <th>User</th>
+                                    {% endif %}
+                                    <th>Temp</th>
+                                    <th>Pressure</th>
+                                    <th>Hydraliclift</th>
+                                    <th>Weight</th>
+                                    <th>Result</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for calc in calculations %}
+                                <tr>
+                                    {% if session.get('is_admin') %}
+                                    <td>
+                                        <span class="user-badge">
+                                            <img src="{{ url_for('static', filename='uploads/' + calc.author.profile_image) if calc.author.profile_image else url_for('static', filename='images/avatar-user.png') }}" 
+                                                 class="user-avatar-sm">
+                                            {{ calc.author.username }}
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    <td>{{ calc.weight }} °C</td>
+                                    <td>{{ calc.pressure }} mmHg</td>
+                                    <td>{{ calc.ideal_weight }} </td>
+                                    <td>{{ calc.temperature }} Gms</td>
+                                    <td>
+    				    <span 
+        				class="badge"
+        				style="background-color: {% if calc.result < 10000 %}#28a745{% else %}#dc3545{% endif %};
+               				color: white;">
+        				{{ calc.result }}
+    				   </span>
+				   </td>
+
+				    
+                                    <td>{{ calc.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">No calculations found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
